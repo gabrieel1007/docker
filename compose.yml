@@ -1,0 +1,5 @@
+services:
+  app:
+    image: essefuncionou
+    ports:
+      - '3011:3000'
