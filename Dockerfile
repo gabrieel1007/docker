@@ -1,25 +1,23 @@
 
-FROM node:latest
+FROM node:22-alpine AS stage
 
-RUN npm i -g @nestjs/cli 
+WORKDIR /app
 
-WORKDIR /
-
-COPY package.json package.json
-COPY tsconfig.json tsconfig.json
-COPY tsconfig.build.json tsconfig.build.json
 COPY . .
 
-RUN yarn install
+RUN yarn install --production
+RUN yarn add @nestjs/cli
 RUN yarn build
 
-ENV PORT=3000
+FROM node:22-alpine AS prod
 
-EXPOSE 3000
+WORKDIR /app
 
-CMD [ "yarn", "start:prod" ]
+ENV NODE_ENV=production  
 
+COPY --from=stage /app/dist ./dist
+COPY --from=stage /app/node_modules ./node_modules
+COPY --from=stage /app/package.json ./package.json
+COPY --from=stage /app/nest-cli.json ./nest-cli.json
 
-
-
-
+ENTRYPOINT [ "yarn", "start:prod" ]

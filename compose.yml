@@ -1,5 +1,5 @@
 services:
   app:
-    image: essefuncionou
+    image: teste:v1
     ports:
       - '3011:3000'
